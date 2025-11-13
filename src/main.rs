@@ -1,31 +1,36 @@
-use std::io::{self, Read};
+use std::{io::{self, Read}};
 
+enum CalError{
+    InvalidNumber,
+    DivisionByZero,
+    InvalidOperator,
+}
 fn main() {
-    println!("Enter first number");
-    let mut input1 = String::new();
-    io::stdin().read_line(&mut input1).expect("Failed to read");
-    let num1: f64 = input1.trim().parse().expect("Please enter a number");
-    
-    println!("Please enter aan operator (+, -, *, /)");
-    let mut op = String::new();
-    io::stdin().read_line(&mut op).expect("Failed to read");
-    let op = op.trim();
+    let num1 =2.0;
+    let num2 =3.0;
+    let op = "+";
 
-    println!("Enter second number");
-    let mut input2 = String::new();
-    io::stdin().read_line(&mut input2).expect("Failed to read");
-    let num2:f64 = input2.trim().parse().expect("Please enter a number");
+    match compute(num1, num2, op){
+        Ok(result) =>  println!("Result:  {result}"),
+        Err(CalError::DivisionByZero) => println!("Cannot divide by zero"),
+        Err(CalError::InvalidOperator) => println!("Please enter a valid operator"),
+        Err(CalError::InvalidNumber) => println!("Invalid input entered")
+    }
+   
+}
 
+fn compute(num1:f64, num2:f64, op:&str)-> Result<f64, CalError>{
     let result = match op{
-        "+" => num1+num2,
-        "-" => num1-num2,
-        "*" => num1*num2,
-        "/" => num1/num2,
-        _ =>{
-            println!("Invalid operator");
-            return;
+        "+" => Ok(num1+num2),
+        "-" => Ok(num1-num2),
+        "*" => Ok(num1*num2),
+        "/" => if(num2==0.0){
+            Err(CalError::DivisionByZero)
         }
+        else{
+            Ok(num1/num2)
+        }
+        _ => Err(CalError::InvalidOperator),
     };
-    println!("Result:{}",result);
-
+    return result;
 }
